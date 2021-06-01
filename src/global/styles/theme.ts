@@ -6,7 +6,7 @@ export default {
     secondary_lignt: 'rgba(255, 135, 44, 0.3)',
 
     success: '#12a454',
-    success_lignt: 'rgba(18, 164, 84, 0.5)',
+    success_light: 'rgba(18, 164, 84, 0.5)',
 
     attention: '#e93f5b',
     attention_lignt: 'rgba(232, 63, 91, 0.5)',
