@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { HighlightCard } from '../../components/HighlightCard';
 import { TransactionCard, TransactionCardProps } from '../../components/TransactionCard';
 
-import { 
+import {
   Container,
   Header,
   UserWrapper,
@@ -15,7 +15,8 @@ import {
   HighlightCards,
   Transactions,
   Title,
-  TransactionsList
+  TransactionsList,
+  LogoutButton
 } from './styles';
 
 export interface DataListProps extends TransactionCardProps {
@@ -79,23 +80,25 @@ export function Dashboard(){
               <UserName>Johnny</UserName>
             </User>
           </UserInfo>
-          <Icon name='power' />
+          <LogoutButton onPress={() => {}}>
+            <Icon name='power' />
+          </LogoutButton>
         </UserWrapper>
       </Header>
       <HighlightCards>
-        <HighlightCard 
+        <HighlightCard
           type="up"
           title="Entradas"
           amount="R$ 17.400,00"
           lastTransaction="Última entrada dia 13 de abril"
         />
-        <HighlightCard 
+        <HighlightCard
           type="down"
           title="Saídas"
           amount="R$ 1.259,00"
           lastTransaction="Última saída dia 03 de abril"
         />
-        <HighlightCard 
+        <HighlightCard
           type="total"
           title="Total"
           amount="R$ 16.141,00"
@@ -106,7 +109,7 @@ export function Dashboard(){
       <Transactions>
         <Title>Movimentações</Title>
 
-        <TransactionsList 
+        <TransactionsList
           data={data}
           keyExtractor={item => item.id}
           renderItem={({ item }) => <TransactionCard data={item} /> }
