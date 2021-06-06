@@ -55,8 +55,6 @@ export function Register() {
     name: 'Categoria'
   });
 
-  const dataKey = '@myfinances:transactions';
-
   const navigation = useNavigation();
 
   const {
@@ -99,6 +97,8 @@ export function Register() {
     }
 
     try {
+      const dataKey = '@myfinances:transactions';
+
       const data = await AsyncStorage.getItem(dataKey);
       const currentData = data ? JSON.parse(data) : [];
 
