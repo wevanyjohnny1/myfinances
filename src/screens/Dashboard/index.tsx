@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from 'react-native';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, version } from 'react';
 
 import { ThemeProvider, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from 'styled-components';
@@ -32,6 +32,7 @@ export interface DataListProps extends TransactionCardProps {
 
 interface HighlightProps {
   total: string;
+  lastTransaction: string;
 }
 
 interface HighlightData {
@@ -47,6 +48,17 @@ export function Dashboard() {
   const [highlightData, setHighlightData] = useState<HighlightData>({} as HighlightData);
 
   const theme = useTheme();
+
+  function getLastTransactionDate(
+    collection: DataListProps[], type: 'positive' | 'negative') {
+
+    const lastTransaction = new Date(
+      Math.max.apply(Math, collection
+        .filter(transaction => transaction.type === type)
+        .map(transaction => new Date(transaction.date).getTime())));
+
+    return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', { month: 'long' })}`;
+  }
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -96,6 +108,12 @@ export function Dashboard() {
 
     setTransactions(formatedTransactions);
 
+    const lastTransactionEntries = getLastTransactionDate(transactions, 'positive');
+
+    const lastTransactionCosts = getLastTransactionDate(transactions, 'negative');
+
+    const totalInterval = `01 a ${lastTransactionCosts}`;
+
     const total = entriesTotal - costsTotal;
 
     setHighlightData({
@@ -103,19 +121,22 @@ export function Dashboard() {
         total: entriesTotal.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL'
-        })
+        }),
+        lastTransaction: `Última entrada dia ${lastTransactionEntries}`,
       },
       costs: {
         total: costsTotal.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL'
-        })
+        }),
+        lastTransaction: `Última saída dia ${lastTransactionCosts}`,
       },
       total: {
         total: total.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL'
-        })
+        }),
+        lastTransaction: `Período de ${totalInterval}`,
       }
     })
 
@@ -160,19 +181,19 @@ export function Dashboard() {
                 type="up"
                 title="Entradas"
                 amount={highlightData.entries.total}
-                lastTransaction="Última entrada dia 13 de abril"
+                lastTransaction={highlightData.entries.lastTransaction}
               />
               <HighlightCard
                 type="down"
                 title="Saídas"
                 amount={highlightData.costs.total}
-                lastTransaction="Última saída dia 03 de abril"
+                lastTransaction={highlightData.costs.lastTransaction}
               />
               <HighlightCard
                 type="total"
                 title="Total"
                 amount={highlightData.total.total}
-                lastTransaction="Período de 01 à 16 de abril"
+                lastTransaction={highlightData.total.lastTransaction}
               />
             </HighlightCards>
 
