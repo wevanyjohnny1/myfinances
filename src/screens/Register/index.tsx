@@ -66,7 +66,7 @@ export function Register() {
     resolver: yupResolver(schema)
   });
 
-  function handleTransactionTypeSelect(type: 'up' | 'down') {
+  function handleTransactionTypeSelect(type: 'positive' | 'negative') {
     setTransactionType(type);
   }
 
@@ -91,7 +91,7 @@ export function Register() {
       id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
-      transactionType,
+      type: transactionType,
       category: category.key,
       date: new Date()
     }
@@ -155,16 +155,16 @@ export function Register() {
                 title="Entrada"
                 type="up"
                 // arrow function porque passa uma prop
-                onPress={() => handleTransactionTypeSelect('up')}
+                onPress={() => handleTransactionTypeSelect('positive')}
                 // retorna true or false (o boolean foi criado na interface do componente)
-                isActive={transactionType === 'up'}
+                isActive={transactionType === 'positive'}
 
               />
               <TransactionTypeButton
                 title="Saída"
                 type="down"
-                onPress={() => handleTransactionTypeSelect('down')}
-                isActive={transactionType === 'down'}
+                onPress={() => handleTransactionTypeSelect('negative')}
+                isActive={transactionType === 'negative'}
               />
             </TransactionsTypes>
 
