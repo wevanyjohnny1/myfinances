@@ -108,9 +108,9 @@ export function Dashboard() {
 
     setTransactions(formatedTransactions);
 
-    const lastTransactionEntries = getLastTransactionDate(transactions, 'positive');
+    const lastTransactionEntries = getLastTransactionDate(formatedTransactions, 'positive');
 
-    const lastTransactionCosts = getLastTransactionDate(transactions, 'negative');
+    const lastTransactionCosts = getLastTransactionDate(formatedTransactions, 'negative');
 
     const totalInterval = `01 a ${lastTransactionCosts}`;
 
