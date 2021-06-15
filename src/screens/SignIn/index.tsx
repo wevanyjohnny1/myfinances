@@ -16,9 +16,29 @@ import {
   Footer,
   FooterWrapper
 } from './styles'
+import { Alert } from 'react-native';
 
 export function SignIn() {
-  const { user } = useAuth();
+  const { user, signInWithGoogle, signInWithApple } = useAuth();
+
+  async function handleSignInButtonWithGoogle() {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Não foi possível conectar com a conta Google')
+    }
+  }
+
+  async function handleSignInButtonWithApple() {
+    try {
+      await signInWithApple();
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Não foi possível conectar com a conta Apple')
+    }
+  }
+
   return (
     <Container>
       <Header>
@@ -43,11 +63,13 @@ export function SignIn() {
           <SignInSocialButton
             title="Entrar com Google"
             svg={GoogleSvg}
+            onPress={handleSignInButtonWithGoogle}
           />
 
           <SignInSocialButton
             title="Entrar com Apple"
             svg={AppleSvg}
+            onPress={handleSignInButtonWithApple}
           />
         </FooterWrapper>
       </Footer>
