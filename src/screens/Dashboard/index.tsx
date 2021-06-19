@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, version } from 'react';
 
 import { ThemeProvider, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from 'styled-components';
+import { useAuth } from '../../hooks/auth';
 
 import { HighlightCard } from '../../components/HighlightCard';
 import { TransactionCard, TransactionCardProps } from '../../components/TransactionCard';
@@ -48,14 +49,20 @@ export function Dashboard() {
   const [highlightData, setHighlightData] = useState<HighlightData>({} as HighlightData);
 
   const theme = useTheme();
+  const { signOut, user } = useAuth();
 
   function getLastTransactionDate(
     collection: DataListProps[], type: 'positive' | 'negative') {
 
+    const filtteredCollection = collection
+      .filter(transaction => transaction.type === type);
+
+    if (filtteredCollection.length === 0)
+      return 0;
+
     const lastTransaction = new Date(
-      Math.max.apply(Math, collection
-        .filter(transaction => transaction.type === type)
-        .map(transaction => new Date(transaction.date).getTime())));
+      Math.max.apply(Math, filtteredCollection
+        .map(transaction => new Date(transaction.date).getTime())))
 
     return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', { month: 'long' })}`;
   }
@@ -69,7 +76,7 @@ export function Dashboard() {
 
 
   async function loadTransactions() {
-    const dataKey = '@myfinances:transactions';
+    const dataKey = `@myfinances:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const transactionsLoaded = response ? JSON.parse(response) : [];
 
@@ -108,11 +115,13 @@ export function Dashboard() {
 
     setTransactions(formatedTransactions);
 
-    const lastTransactionEntries = getLastTransactionDate(formatedTransactions, 'positive');
+    const lastTransactionEntries = getLastTransactionDate(transactionsLoaded, 'positive');
 
-    const lastTransactionCosts = getLastTransactionDate(formatedTransactions, 'negative');
+    const lastTransactionCosts = getLastTransactionDate(transactionsLoaded, 'negative');
 
-    const totalInterval = `01 a ${lastTransactionCosts}`;
+    const totalInterval = lastTransactionCosts === 0
+      ? 'Não há transações'
+      : `Período de 01 a ${lastTransactionCosts}`;
 
     const total = entriesTotal - costsTotal;
 
@@ -122,21 +131,25 @@ export function Dashboard() {
           style: 'currency',
           currency: 'BRL'
         }),
-        lastTransaction: `Última entrada dia ${lastTransactionEntries}`,
+        lastTransaction: lastTransactionEntries === 0
+          ? 'Não há transações'
+          : `Última entrada dia ${lastTransactionEntries}`,
       },
       costs: {
         total: costsTotal.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL'
         }),
-        lastTransaction: `Última saída dia ${lastTransactionCosts}`,
+        lastTransaction: lastTransactionCosts === 0
+          ? 'Não há transações'
+          : `Última saída dia ${lastTransactionCosts}`,
       },
       total: {
         total: total.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL'
         }),
-        lastTransaction: `Período de ${totalInterval}`,
+        lastTransaction: `${totalInterval}`,
       }
     })
 
@@ -165,13 +178,13 @@ export function Dashboard() {
             <Header>
               <UserWrapper>
                 <UserInfo>
-                  <Photo source={{ uri: 'https://avatars.githubusercontent.com/u/61592492?v=4' }} />
+                  <Photo source={{ uri: user.photo }} />
                   <User>
                     <UserGretting>{greeting},</UserGretting>
-                    <UserName>Johnny</UserName>
+                    <UserName>{user.name}</UserName>
                   </User>
                 </UserInfo>
-                <LogoutButton onPress={() => { }}>
+                <LogoutButton onPress={signOut}>
                   <Icon name='power' />
                 </LogoutButton>
               </UserWrapper>

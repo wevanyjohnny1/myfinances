@@ -22,6 +22,7 @@ export function AppRoutes() {
         style: {
           paddingVertical: Platform.OS === 'ios' ? 20 : 0,
           height: 88,
+          paddingLeft: 30
         }
       }}
     >
